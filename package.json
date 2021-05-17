@@ -1,10 +1,10 @@
 {
-  "name": "with-typescript",
+  "name": "next-docker-app",
   "version": "1.0.0",
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 8081",
     "type-check": "tsc"
   },
   "dependencies": {
