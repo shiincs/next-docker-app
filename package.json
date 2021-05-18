@@ -2,10 +2,11 @@
   "name": "next-docker-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "next",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start -p 8081",
-    "type-check": "tsc"
+    "start": "NODE_ENV=production node server.js",
+    "type-check": "tsc",
+    "pm2": "pm2-runtime start pm2.json"
   },
   "dependencies": {
     "next": "latest",

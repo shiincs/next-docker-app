@@ -1,0 +1,10 @@
+{
+    "apps": [
+        {
+            "name": "next-docker-app",
+            "script": "src/server.js",
+            "instances": "max",
+            "exec_mode": "cluster"
+        }
+    ]
+}
