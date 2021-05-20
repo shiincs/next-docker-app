@@ -27,7 +27,7 @@ COPY --from=builder /usr/app/package.json ./package.json
 COPY --from=builder /usr/app/src ./src
 COPY --from=builder /usr/app/pm2.json ./pm2.json
 
-EXPOSE 8081
+EXPOSE 8080
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry

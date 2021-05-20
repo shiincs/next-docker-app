@@ -7,7 +7,7 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 
 app.prepare().then(() => {
-    const port = dev ? 3000 : 8081
+    const port = dev ? 3000 : 8080
 
     createServer((req, res) => {
         // Be sure to pass `true` as the second argument to `url.parse`.
