@@ -41,10 +41,10 @@ node {
         env.EB_APPLICATION_NAME = "next-docker-app"
         env.EB_ENV_NAME = "Nextdockerapp-env"
 
-        sh 'which aws'
-
         withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
             sh '''
+                source /etc/profile
+
                 echo $PATH
                 # create Dockerrun.aws.json files
                 # sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
