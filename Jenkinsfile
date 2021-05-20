@@ -34,8 +34,8 @@ node {
         * Second, the 'latest' tag.
         * Pushing multiple tags is cheap, as all the layers are reused. */
 
-//         sh 'rm  ~/.dockercfg || true'
-//         sh 'rm ~/.docker/config.json || true'
+        sh 'rm  ~/.dockercfg || true'
+        sh 'rm ~/.docker/config.json || true'
 
         docker.withRegistry(
             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
@@ -54,7 +54,7 @@ node {
         withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
             sh '''
                 # create Dockerrun.aws.json files
-                # sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
+                sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
 
                 # Upload S3
                 /usr/local/bin/aws s3 cp "${WORKSPACE}/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
