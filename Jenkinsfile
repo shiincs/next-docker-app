@@ -38,7 +38,7 @@ node {
         sh 'rm ~/.docker/config.json || true'
 
         sh '''
-            aws ecr get-login-password --region ap.northeast-2 | docker login --username AWS --password-stdin 053149737028.dkr.ecr.ap.northeast-2.amazonaws.com
+            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 053149737028.dkr.ecr.ap-northeast-2.amazonaws.com
         '''
 
         docker.withRegistry(
