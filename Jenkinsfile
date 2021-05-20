@@ -43,8 +43,9 @@ node {
 
         withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
             sh '''
+                echo $PATH
                 # create Dockerrun.aws.json files
-                sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
+                # sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
 
                 # Upload S3
                 aws s3 cp "${WORKSPACE}/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
