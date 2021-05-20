@@ -19,9 +19,7 @@ node {
     stage('Build image') {
         /* This builds the actual image; synonymous to
         * docker build on the command line */
-//         app = docker.build("053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app")
-
-        docker.build("next-docker-app", "-f ./next-docker-app/Dockerfile .")
+        app = docker.build("053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app")
     }
 
     stage('Test image') {
@@ -39,23 +37,18 @@ node {
 //         sh 'rm  ~/.dockercfg || true'
 //         sh 'rm ~/.docker/config.json || true'
 
-//         docker.withRegistry(
-//             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
-//             'ecr:ap-northeast-2:shiincs-ecr-credential'
-//         ) {
-//             app.push("${env.BUILD_NUMBER}")
-//             app.push("latest")
-//         }
-
         sh '$(aws ecr get-login --no-include-email --region ap-northeast-2)'
-        // Push the Docker image to ECR
-        docker.withRegistry('https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com')
-        {
-            docker.image("next-docker-app").push()
+
+        docker.withRegistry(
+            'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
+            'ecr:ap-northeast-2:shiincs-ecr-credential'
+        ) {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
         }
 
         // make sure that the Docker image is removed
-        sh "docker rmi demo-application | true"
+        sh "docker rmi demo-application:${GIT_COMMIT} | true"
     }
 
     stage('Deploy AWS') {
