@@ -39,7 +39,7 @@ node {
 
         docker.withRegistry(
             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
-            'ecr:ap-northeast-2:shiincs-ecr-credential'
+            'shiincs-ecr-credential'
         ) {
             app.push("${env.BUILD_NUMBER}")
         }
@@ -50,7 +50,7 @@ node {
         env.EB_APPLICATION_NAME = "next-docker-app"
         env.EB_ENV_NAME = "Nextdockerapp-env"
 
-        withAWS(region: 'ap-northeast-2', credentials: 'ecr:ap-northeast-2:shiincs-ecr-credential') {
+        withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
             sh '''
                 # create Dockerrun.aws.json files
                 sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
