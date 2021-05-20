@@ -6,6 +6,16 @@ node {
         checkout scm
     }
 
+    stage('AWS Check') {
+        sh '''
+            apt-get update
+            apt install python3-pip -y
+            pip3 install awscli --upgrade
+        '''
+
+        sh 'aws --version'
+    }
+
     stage('Build image') {
         /* This builds the actual image; synonymous to
         * docker build on the command line */
@@ -15,8 +25,6 @@ node {
     stage('Test image') {
         app.inside {
             sh 'echo "Tests passed"'
-            sh 'which aws'
-            sh 'aws --version'
         }
     }
 
@@ -26,8 +34,8 @@ node {
         * Second, the 'latest' tag.
         * Pushing multiple tags is cheap, as all the layers are reused. */
 
-        sh 'rm  ~/.dockercfg || true'
-        sh 'rm ~/.docker/config.json || true'
+//         sh 'rm  ~/.dockercfg || true'
+//         sh 'rm ~/.docker/config.json || true'
 
         docker.withRegistry(
             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
