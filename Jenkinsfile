@@ -21,7 +21,7 @@ node {
         * docker build on the command line */
 //         app = docker.build("053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app")
 
-        docker.build("next-docker-app:${GIT_COMMIT}", "-f ./next-docker-app/Dockerfile .")
+        docker.build("next-docker-app", "-f ./next-docker-app/Dockerfile .")
     }
 
     stage('Test image') {
@@ -51,11 +51,11 @@ node {
         // Push the Docker image to ECR
         docker.withRegistry('https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com')
         {
-            docker.image("next-docker-app:${GIT_COMMIT}").push()
+            docker.image("next-docker-app").push()
         }
 
         // make sure that the Docker image is removed
-        sh "docker rmi demo-application:${GIT_COMMIT} | true"
+        sh "docker rmi demo-application | true"
     }
 
     stage('Deploy AWS') {
