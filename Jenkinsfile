@@ -50,26 +50,28 @@ node {
         env.EB_APPLICATION_NAME = "next-docker-app"
         env.EB_ENV_NAME = "Nextdockerapp-env"
 
-        sh '''
-        # create Dockerrun.aws.json files
-        sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
+        withAWS(region: 'ap-northeast-2', credentials: 'ecr:ap-northeast-2:shiincs-ecr-credential') {
+            sh '''
+                # create Dockerrun.aws.json files
+                sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
 
-        # Upload S3
-        /usr/local/bin/aws s3 cp "${WORKSPACE}/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
-            --region ap-northeast-2
+                # Upload S3
+                /usr/local/bin/aws s3 cp "${WORKSPACE}/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
+                    --region ap-northeast-2
 
-        # Execute Beanstalk
-        /usr/local/bin/aws elasticbeanstalk create-application-version \
-            --region ap-northeast-2 \
-            --application-name ${EB_APPLICATION_NAME} \
-            --version-label ${GIT_COMMIT}-${BUILD_NUMBER} \
-            --description ${GIT_COMMIT}-${BUILD_NUMBER} \
-            --source-bundle S3Bucket="elasticbeanstalk-ap-northeast-2-053149737028",S3Key="${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json"
+                # Execute Beanstalk
+                /usr/local/bin/aws elasticbeanstalk create-application-version \
+                    --region ap-northeast-2 \
+                    --application-name ${EB_APPLICATION_NAME} \
+                    --version-label ${GIT_COMMIT}-${BUILD_NUMBER} \
+                    --description ${GIT_COMMIT}-${BUILD_NUMBER} \
+                    --source-bundle S3Bucket="elasticbeanstalk-ap-northeast-2-053149737028",S3Key="${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json"
 
-        /usr/local/bin/aws elasticbeanstalk update-environment \
-            --region ap-northeast-2 \
-            --environment-name ${EB_ENV_NAME} \
-            --version-label ${GIT_COMMIT}-${BUILD_NUMBER}
-        '''
+                /usr/local/bin/aws elasticbeanstalk update-environment \
+                    --region ap-northeast-2 \
+                    --environment-name ${EB_ENV_NAME} \
+                    --version-label ${GIT_COMMIT}-${BUILD_NUMBER}
+                '''
+        }
     }
 }
