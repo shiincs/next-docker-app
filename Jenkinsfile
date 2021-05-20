@@ -9,6 +9,8 @@ node {
     stage('Build image') {
         /* This builds the actual image; synonymous to
         * docker build on the command line */
+        sh 'source /etc/profile'
+
         app = docker.build("053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app")
     }
 
@@ -43,9 +45,6 @@ node {
 
         withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
             sh '''
-                source /etc/profile
-
-                echo $PATH
                 # create Dockerrun.aws.json files
                 # sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
 
