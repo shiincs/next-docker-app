@@ -42,7 +42,7 @@ node {
         env.EB_ENV_NAME = "Nextdockerapp-env"
 
         sh '''
-        ls
+        which aws
 
         # create Dockerrun.aws.json files
         sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
