@@ -42,6 +42,7 @@ node {
             'ecr:ap-northeast-2:shiincs-ecr-credential'
         ) {
             app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
         }
     }
 
