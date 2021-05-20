@@ -15,6 +15,8 @@ node {
     stage('Test image') {
         app.inside {
             sh 'echo "Tests passed"'
+            sh 'which aws'
+            sh 'aws --version'
         }
     }
 
@@ -40,8 +42,6 @@ node {
         env.BUILD_ENVIRONMENT = "PROD"
         env.EB_APPLICATION_NAME = "next-docker-app"
         env.EB_ENV_NAME = "Nextdockerapp-env"
-
-        sh 'echo $(which aws)'
 
         withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
             sh '''
