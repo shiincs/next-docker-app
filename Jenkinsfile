@@ -34,21 +34,15 @@ node {
         * Second, the 'latest' tag.
         * Pushing multiple tags is cheap, as all the layers are reused. */
 
-//         sh 'rm  ~/.dockercfg || true'
-//         sh 'rm ~/.docker/config.json || true'
-
-        sh '$(aws ecr get-login --no-include-email --region ap-northeast-2)'
+        sh 'rm  ~/.dockercfg || true'
+        sh 'rm ~/.docker/config.json || true'
 
         docker.withRegistry(
             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
             'ecr:ap-northeast-2:shiincs-ecr-credential'
         ) {
             app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
         }
-
-        // make sure that the Docker image is removed
-        sh "docker rmi demo-application:${GIT_COMMIT} | true"
     }
 
     stage('Deploy AWS') {
@@ -56,28 +50,26 @@ node {
         env.EB_APPLICATION_NAME = "next-docker-app"
         env.EB_ENV_NAME = "Nextdockerapp-env"
 
-        withAWS(region: 'ap-northeast-2', credentials: 'shiincs-ecr-credential') {
-            sh '''
-                # create Dockerrun.aws.json files
-                sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
+        sh '''
+        # create Dockerrun.aws.json files
+        sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/Dockerrun.aws.json"
 
-                # Upload S3
-                /usr/local/bin/aws s3 cp "${WORKSPACE}/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
-                    --region ap-northeast-2
+        # Upload S3
+        /usr/local/bin/aws s3 cp "${WORKSPACE}/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
+            --region ap-northeast-2
 
-                # Execute Beanstalk
-                /usr/local/bin/aws elasticbeanstalk create-application-version \
-                    --region ap-northeast-2 \
-                    --application-name ${EB_APPLICATION_NAME} \
-                    --version-label ${GIT_COMMIT}-${BUILD_NUMBER} \
-                    --description ${GIT_COMMIT}-${BUILD_NUMBER} \
-                    --source-bundle S3Bucket="elasticbeanstalk-ap-northeast-2-053149737028",S3Key="${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json"
+        # Execute Beanstalk
+        /usr/local/bin/aws elasticbeanstalk create-application-version \
+            --region ap-northeast-2 \
+            --application-name ${EB_APPLICATION_NAME} \
+            --version-label ${GIT_COMMIT}-${BUILD_NUMBER} \
+            --description ${GIT_COMMIT}-${BUILD_NUMBER} \
+            --source-bundle S3Bucket="elasticbeanstalk-ap-northeast-2-053149737028",S3Key="${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json"
 
-                /usr/local/bin/aws elasticbeanstalk update-environment \
-                    --region ap-northeast-2 \
-                    --environment-name ${EB_ENV_NAME} \
-                    --version-label ${GIT_COMMIT}-${BUILD_NUMBER}
-                '''
-        }
+        /usr/local/bin/aws elasticbeanstalk update-environment \
+            --region ap-northeast-2 \
+            --environment-name ${EB_ENV_NAME} \
+            --version-label ${GIT_COMMIT}-${BUILD_NUMBER}
+        '''
     }
 }
