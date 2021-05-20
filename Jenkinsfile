@@ -19,7 +19,9 @@ node {
     stage('Build image') {
         /* This builds the actual image; synonymous to
         * docker build on the command line */
-        app = docker.build("053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app")
+//         app = docker.build("053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app")
+
+        docker.build("next-docker-app:${GIT_COMMIT}", "-f ./next-docker-app/Dockerfile .")
     }
 
     stage('Test image') {
@@ -34,20 +36,26 @@ node {
         * Second, the 'latest' tag.
         * Pushing multiple tags is cheap, as all the layers are reused. */
 
-        sh 'rm  ~/.dockercfg || true'
-        sh 'rm ~/.docker/config.json || true'
+//         sh 'rm  ~/.dockercfg || true'
+//         sh 'rm ~/.docker/config.json || true'
 
-        sh '''
-            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 053149737028.dkr.ecr.ap-northeast-2.amazonaws.com
-        '''
+//         docker.withRegistry(
+//             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
+//             'ecr:ap-northeast-2:shiincs-ecr-credential'
+//         ) {
+//             app.push("${env.BUILD_NUMBER}")
+//             app.push("latest")
+//         }
 
-        docker.withRegistry(
-            'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
-            'ecr:ap-northeast-2:shiincs-ecr-credential'
-        ) {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
+        sh '$(aws ecr get-login --no-include-email --region ap-northeast-2)'
+        // Push the Docker image to ECR
+        docker.withRegistry('https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com')
+        {
+            docker.image("next-docker-app:${GIT_COMMIT}").push()
         }
+
+        // make sure that the Docker image is removed
+        sh "docker rmi demo-application:${GIT_COMMIT} | true"
     }
 
     stage('Deploy AWS') {
