@@ -39,7 +39,7 @@ node {
 
         docker.withRegistry(
             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
-            'shiincs-ecr-credential'
+            'ecr:ap-northeast-2:shiincs-ecr-credential'
         ) {
             app.push("${env.BUILD_NUMBER}")
         }
