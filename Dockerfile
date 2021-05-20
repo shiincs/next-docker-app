@@ -26,6 +26,7 @@ COPY --from=builder /usr/app/node_modules ./node_modules
 COPY --from=builder /usr/app/package.json ./package.json
 COPY --from=builder /usr/app/src ./src
 COPY --from=builder /usr/app/pm2.json ./pm2.json
+COPY --from=builder /usr/app/Dockerrun.aws.json ./Dockerrun.aws.json
 
 EXPOSE 8080
 

@@ -27,9 +27,40 @@ node {
         sh 'rm  ~/.dockercfg || true'
         sh 'rm ~/.docker/config.json || true'
 
-        docker.withRegistry('https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com', 'ecr:ap-northeast-2:shiincs-ecr-credential') {
+        docker.withRegistry(
+            'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
+            'ecr:ap-northeast-2:shiincs-ecr-credential'
+        ) {
             app.push("${env.BUILD_NUMBER}")
             app.push("latest")
         }
+    }
+
+    stage('Deploy AWS') {
+        env.BUILD_ENVIRONMENT = "PROD"
+        env.EB_APPLICATION_NAME = "next-docker-app"
+        env.EB_ENV_NAME = "Nextdockerapp-env"
+
+        sh '''
+        # create Dockerrun.aws.json files
+        sed -i "s|GIT_COMMIT_SHA|${GIT_COMMIT}|g" "${WORKSPACE}/scripts/next-docker-app/Dockerrun.aws.json"
+
+        # Upload S3
+        aws s3 cp "${WORKSPACE}/scripts/next-docker-app/Dockerrun.aws.json" s3://elasticbeanstalk-ap-northeast-2-053149737028/${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json \
+            --region ap-northeast-2
+
+        # Execute Beanstalk
+        aws elasticbeanstalk create-application-version \
+            --region ap-northeast-2 \
+            --application-name ${EB_APPLICATION_NAME} \
+            --version-label ${GIT_COMMIT}-${BUILD_NUMBER} \
+            --description ${GIT_COMMIT}-${BUILD_NUMBER} \
+            --source-bundle S3Bucket="elasticbeanstalk-ap-northeast-2-053149737028",S3Key="${BUILD_ENVIRONMENT}-${EB_APPLICATION_NAME}-${GIT_COMMIT}.aws.json"
+
+        aws elasticbeanstalk update-environment \
+            --region ap-northeast-2 \
+            --environment-name ${EB_ENV_NAME} \
+            --version-label ${GIT_COMMIT}-${BUILD_NUMBER}
+        '''
     }
 }
