@@ -48,8 +48,8 @@ node {
 
     stage('Deploy AWS') {
         env.BUILD_ENVIRONMENT = "PROD"
-        env.EB_APPLICATION_NAME = "next-docker-app"
-        env.EB_ENV_NAME = "Nextdockerapp-env"
+        env.EB_APPLICATION_NAME = "next-docker"
+        env.EB_ENV_NAME = "Nextdocker-env"
 
         withAWS(region: 'ap-northeast-2', credentials: 'shiincs-user') {
             sh '''
