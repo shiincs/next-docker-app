@@ -1,8 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app:latest",
-    "Update": "true"
+    "Name": "053149737028.dkr.ecr.ap-northeast-2.amazonaws.com/next-docker-app:latest"
   },
   "Ports": [
     {
