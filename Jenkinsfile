@@ -41,10 +41,10 @@ node {
             'https://053149737028.dkr.ecr.ap-northeast-2.amazonaws.com',
             'ecr:ap-northeast-2:shiincs-user'
         ) {
-            app.push("${env.BUILD_NUMBER}")
+//             app.push("${env.BUILD_NUMBER}")
             app.push("latest")
         }
-    }
+    }ㅎ
 
 //     stage('Deploy AWS') {
 //         env.BUILD_ENVIRONMENT = "PROD"
